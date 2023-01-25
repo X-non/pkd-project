@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "strict": true,
+        "noEmitOnError": true,
+        "outDir": "build"
+    },
+    "include": [
+        "src/**/*",
+        "tests/**/*"
+    ],
+}
