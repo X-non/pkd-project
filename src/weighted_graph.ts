@@ -1,11 +1,8 @@
 type WeightedEdge = { node1: number, node2: number, weight: number };
 
-class WeightedGraph<T> {
+class WeightedGraph {
     weighted_adjacency_matrix: number[][];
-    items: T[];
-
-    constructor(edges: WeightedEdge[], items: T[]) {
-        this.items = items;
+    constructor(edges: WeightedEdge[]) {
         const matrix: number[][] = [];
         for (const { node1, node2, weight } of edges) {
             if (matrix[node1] === undefined) {
@@ -20,5 +17,4 @@ class WeightedGraph<T> {
 
         this.weighted_adjacency_matrix = matrix;
     }
-
 }
