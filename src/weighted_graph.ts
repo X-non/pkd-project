@@ -1,6 +1,6 @@
 type WeightedEdge = { node1: number, node2: number, weight: number };
 
-class WeightedGraph {
+class CompleteGraph {
     weighted_adjacency_matrix: number[][];
     constructor(edges: WeightedEdge[]) {
         const matrix: number[][] = [];
@@ -14,7 +14,9 @@ class WeightedGraph {
             matrix[node1][node2] = weight;
             matrix[node2][node1] = weight;
         }
-
+        if (matrix.every(row => row.every(element => element !== undefined))) {
+            throw new Error("A complete graph needs a edge between all pair of nodes")
+        }
         this.weighted_adjacency_matrix = matrix;
     }
 }
