@@ -1,14 +1,55 @@
+export class SquareMatrix<T> {
+    static empty<T>(): SquareMatrix<T> {
+        return new SquareMatrix([], 0);
+    }
+    private data: T[];
+    readonly side_length: number;
+
+    static from_2d_array<T>(array: T[][]): SquareMatrix<T> {
+        const size_length = array.length;
+        const data: T[] = Array(size_length * size_length);
+
+        if (size_length === 0) {
+            return SquareMatrix.empty();
+        }
+
+        for (const row of array) {
+            if (row.length !== size_length) {
+                throw new Error("The rows of the array must be the same length as each other and amount of rows");
+            }
+
+            data.push(...row);
+        }
+        return new SquareMatrix(data, size_length)
+    }
+
+    constructor(data: T[], side_length: number) {
+        this.data = data;
+        this.side_length = side_length;
+    }
+
+    private data_index(row: number, column: number): number {
+        return row + column * this.side_length
+    }
+
+    set(row: number, column: number, value: T) {
+        this.data[this.data_index(row, column)] = value;
+    }
+
+    get(row: number, column: number): T {
+        return this.data[this.data_index(row, column)];
+    }
+
+}
 export type Edge = { node1: number, node2: number, weight: number };
 
 export class CompleteGraph<T> {
-    weight_matrix: number[][];
+    weight_matrix: SquareMatrix<number>;
     items: T[]
 
-    constructor(weight_matrix: number[][], items: T[]) {
-        if (weight_matrix.every(row => row.every(element => element !== undefined))) {
-            throw new Error("A complete graph needs a edge between all pair of nodes")
-        }
-        if (items.length === weight_matrix.length && weight_matrix.every(row => row.length == items.length)) {
+    constructor(weight_matrix: SquareMatrix<number>, items: T[]) {
+
+        if (weight_matrix.side_length === items.length) {
             throw new Error("The number of nodes and provided items don't match");
         }
         this.weight_matrix = weight_matrix;
@@ -41,7 +82,7 @@ export class CompleteGraph<T> {
         if (items.length === weight_matrix.length && weight_matrix.every(row => row.length == items.length)) {
             throw new Error("The number of nodes and provided items don't match");
         }
-        return new CompleteGraph(weight_matrix, items);
+        return new CompleteGraph(SquareMatrix.from_2d_array(weight_matrix), items);
     }
     /**
      * Gets all nodes in the graph
@@ -64,7 +105,7 @@ export class CompleteGraph<T> {
      */
     weight_between(node1: number, node2: number): number {
         //needs fixing if we start to use a directed graph
-        return this.weight_matrix[node1][node2];
+        return this.weight_matrix.get(node1, node2);
     }
 
     /**
