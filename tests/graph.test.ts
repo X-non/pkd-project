@@ -56,20 +56,51 @@ describe("Throws when the graph is invalid", () => {
     })
 })
 
-describe("Subgraph creation", () => {
+describe.each([
+    {
+        items: [0, 1, 2, 3],
+        matrix: SquareMatrix.from_2d_array([
+            [1, 2, 3, 4],
+            [1, 2, 3, 4],
+            [1, 2, 3, 4],
+            [1, 2, 3, 4],
+        ])
+    },
+    {
+        items: [0],
+        matrix: SquareMatrix.from_2d_array([[0]])
+    }
+
+])("Subgraph creation", ({ items, matrix }) => {
+    const graph = new CompleteGraph(matrix, items);
+
     test("Can get empty subgraphs", () => {
-        const items = [0, 1, 2, 3];
-
-        const matrix = SquareMatrix.from_2d_array([
-            [1, 2, 3, 4],
-            [1, 2, 3, 4],
-            [1, 2, 3, 4],
-            [1, 2, 3, 4],
-        ]);
-
-        const graph = new CompleteGraph(matrix, items);
         const empty_subgraph = graph.subgraph((_) => false);
         expect(empty_subgraph.size()).toBe(0);
         expect(empty_subgraph.weight_matrix).toEqual(SquareMatrix.empty());
     });
+
+    test("Can get some subgraphs", () => {
+
+        const subgraph = graph.subgraph(node => node === 0);
+        expect(subgraph.size()).toBe(1);
+    });
+
+    test("subgraph equals graph", () => {
+        const subgraph = graph.subgraph((_) => true);
+        console.log("graph:", graph);
+        console.log("subgraph:", subgraph);
+        expect(subgraph).toEqual(graph);
+        expect(subgraph).not.toBe(graph);
+    });
 })
+
+// 1, 2, 3, 4,
+// 1, 2, 3, 4,
+// 1, 2, 3, 4,
+// 1, 2, 3, 4
+
+// 1, 1, 1, 1,
+// 2, 2, 2, 2,
+// 3, 3, 3, 3,
+// 4, 4, 4, 4
