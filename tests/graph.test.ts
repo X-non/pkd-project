@@ -57,19 +57,26 @@ describe("Throws when the graph is invalid", () => {
 })
 
 describe("Subgraph creation", () => {
+    const items = [0, 1, 2, 3];
+
+    const matrix = SquareMatrix.from_2d_array([
+        [1, 2, 3, 4],
+        [1, 2, 3, 4],
+        [1, 2, 3, 4],
+        [1, 2, 3, 4],
+    ]);
+
+    const graph = new CompleteGraph(matrix, items);
+
     test("Can get empty subgraphs", () => {
-        const items = [0, 1, 2, 3];
-
-        const matrix = SquareMatrix.from_2d_array([
-            [1, 2, 3, 4],
-            [1, 2, 3, 4],
-            [1, 2, 3, 4],
-            [1, 2, 3, 4],
-        ]);
-
-        const graph = new CompleteGraph(matrix, items);
         const empty_subgraph = graph.subgraph((_) => false);
         expect(empty_subgraph.size()).toBe(0);
         expect(empty_subgraph.weight_matrix).toEqual(SquareMatrix.empty());
+    });
+
+    test("Can get some subgraphs", () => {
+        const subgraph = graph.subgraph(node => node === 0);
+        expect(subgraph.size()).toBe(1);
+        expect(subgraph.weight_matrix).toEqual(SquareMatrix.from_2d_array([[1]]));
     });
 })
