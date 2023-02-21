@@ -26,14 +26,15 @@ describe("Throws when the graph is invalid", () => {
 
     test("Too large matrix throws", () => {
         const items = ["foo", "bar", "baz", "beep"];
-        const matrix = SquareMatrix.from_2d_array([
-            [1, 1, 1, 1],
-            [1, 1, 1, 1],
-            [1, 1, 1, 1],
-            [1, 1, 1, 1],
-            [1, 1, 1, 1],
-        ]);
-        expect(() => new CompleteGraph(matrix, items)).toThrow();
+        expect(() =>
+            SquareMatrix.from_2d_array([
+                [1, 1, 1, 1],
+                [1, 1, 1, 1],
+                [1, 1, 1, 1],
+                [1, 1, 1, 1],
+                [1, 1, 1, 1],
+            ])
+        ).toThrow();
     })
 })
 
@@ -51,6 +52,6 @@ describe("Subgraph creation", () => {
         const graph = new CompleteGraph(matrix, items);
         const empty_subgraph = graph.subgraph((_) => false);
         expect(empty_subgraph.size()).toBe(0);
-        expect(empty_subgraph.weight_matrix).toEqual([]);
+        expect(empty_subgraph.weight_matrix).toEqual(SquareMatrix.empty());
     });
 })

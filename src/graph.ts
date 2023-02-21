@@ -7,7 +7,7 @@ export class SquareMatrix<T> {
 
     static from_2d_array<T>(array: T[][]): SquareMatrix<T> {
         const size_length = array.length;
-        const data: T[] = Array(size_length * size_length);
+        const data: T[] = [];
 
         if (size_length === 0) {
             return SquareMatrix.empty();
@@ -24,6 +24,9 @@ export class SquareMatrix<T> {
     }
 
     constructor(data: T[], side_length: number) {
+        if (side_length * side_length !== data.length) {
+            throw new Error(`The data fill a square in this case data.length === ${side_length * side_length} found data.length === ${data.length}`)
+        }
         this.data = data;
         this.side_length = side_length;
     }
@@ -49,7 +52,7 @@ export class CompleteGraph<T> {
 
     constructor(weight_matrix: SquareMatrix<number>, items: T[]) {
 
-        if (weight_matrix.side_length === items.length) {
+        if (weight_matrix.side_length !== items.length) {
             throw new Error("The number of nodes and provided items don't match");
         }
         this.weight_matrix = weight_matrix;
@@ -65,24 +68,28 @@ export class CompleteGraph<T> {
      */
     static from_edges<T>(edges: Edge[], items: T[]): CompleteGraph<T> {
         const weight_matrix: number[][] = [];
+        const matrix_side_length = items.length;
         for (const { node1, node2, weight } of edges) {
             if (weight_matrix[node1] === undefined) {
-                weight_matrix[node1] = [];
+                weight_matrix[node1] = Array(matrix_side_length);
             }
             if (weight_matrix[node2] === undefined) {
-                weight_matrix[node2] = [];
+                weight_matrix[node2] = [matrix_side_length];
             }
             weight_matrix[node1][node2] = weight;
             weight_matrix[node2][node1] = weight;
         }
 
-        if (weight_matrix.every(row => row.every(element => element !== undefined))) {
-            throw new Error("A complete graph needs a edge between all pair of nodes")
+        for (const row of weight_matrix) {
+            for (const slot of row) {
+                if (slot === undefined) {
+                    throw new Error("A complete graph needs edges between every pair of nodes");
+                }
+            }
         }
-        if (items.length === weight_matrix.length && weight_matrix.every(row => row.length == items.length)) {
-            throw new Error("The number of nodes and provided items don't match");
-        }
-        return new CompleteGraph(SquareMatrix.from_2d_array(weight_matrix), items);
+
+        const matrix = SquareMatrix.from_2d_array(weight_matrix);
+        return new CompleteGraph(matrix, items);
     }
     /**
      * Gets all nodes in the graph
