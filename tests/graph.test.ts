@@ -1,4 +1,22 @@
 import { CompleteGraph, SquareMatrix } from "../src/graph"
+describe("SquareMatrix works as intended", () => {
+    test("from_2d_array_works", () => {
+        let array = [
+            [0, 100, 100],
+            [100, 0, 100],
+            [100, 100, 0],
+        ];
+
+        let matrix = SquareMatrix.from_2d_array(array);
+        for (let row_i = 0; row_i < array.length; row_i++) {
+            const row = array[row_i];
+            for (let col_i = 0; col_i < array.length; col_i++) {
+                const cell = row[col_i];
+                expect(matrix.get(row_i, col_i)).toEqual(cell);
+            }
+        }
+    })
+})
 
 describe("Throws when the graph is invalid", () => {
     test.each([

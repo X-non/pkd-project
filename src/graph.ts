@@ -92,7 +92,7 @@ export class CompleteGraph<T> {
                 weight_matrix[node1] = Array(matrix_side_length);
             }
             if (weight_matrix[node2] === undefined) {
-                weight_matrix[node2] = [matrix_side_length];
+                weight_matrix[node2] = Array(matrix_side_length);
             }
             weight_matrix[node1][node2] = weight;
             weight_matrix[node2][node1] = weight;
