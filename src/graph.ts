@@ -1,10 +1,18 @@
+/**
+ * A square matrix of some type
+ */
 export class SquareMatrix<T> {
     static empty<T>(): SquareMatrix<T> {
         return new SquareMatrix([], 0);
     }
     private data: T[];
     readonly side_length: number;
-
+    /**
+     * Creates a square matrix form a 2d array
+     * @throws if the 2d array isn't actually square
+     * @param array {T[][]} A 2d array reprecenting a square matrix
+     * @returns 
+     */
     static from_2d_array<T>(array: T[][]): SquareMatrix<T> {
         const size_length = array.length;
         const data: T[] = [];
@@ -22,7 +30,14 @@ export class SquareMatrix<T> {
         }
         return new SquareMatrix(data, size_length)
     }
-
+    /**
+     * Raw initalisation of the baking buffer and side_length.
+     * Not really intended to be used if something better can be used
+     * e.g {@link SquareMatrix.from_2d_array()}.
+     * @throws if the data cant fill a square of side_length * side_length
+     * @param data {T[]} the backing data  
+     * @param side_length {number} the side length of the matrix  
+     */
     constructor(data: T[], side_length: number) {
         if (side_length * side_length !== data.length) {
             throw new Error(`The data fill a square in this case data.length === ${side_length * side_length} found data.length === ${data.length}`)
@@ -44,13 +59,16 @@ export class SquareMatrix<T> {
     }
 
 }
-export type Edge = { node1: number, node2: number, weight: number };
-
+type Node = number;
+export type Edge = { node1: Node, node2: Node, weight: number };
+/**
+ * A complete graph containing some items.
+ */
 export class CompleteGraph<T> {
-    weight_matrix: SquareMatrix<number>;
+    weight_matrix: SquareMatrix<Node>;
     items: T[]
 
-    constructor(weight_matrix: SquareMatrix<number>, items: T[]) {
+    constructor(weight_matrix: SquareMatrix<Node>, items: T[]) {
 
         if (weight_matrix.side_length !== items.length) {
             throw new Error("The number of nodes and provided items don't match");
@@ -106,11 +124,11 @@ export class CompleteGraph<T> {
 
     /**
      * Get the weight a edge descibed by two nodes
-     * @param node1 {number} one end of the edge
-     * @param node2 {number} the other end of the edge
+     * @param node1 {Node} one end of the edge
+     * @param node2 {Node} the other end of the edge
      * @returns {number} the weight of the edge 
      */
-    weight_between(node1: number, node2: number): number {
+    weight_between(node1: Node, node2: Node): number {
         //needs fixing if we start to use a directed graph
         return this.weight_matrix.get(node1, node2);
     }
@@ -120,7 +138,7 @@ export class CompleteGraph<T> {
      * @param node {number} 
      * @returns {Edge[]} Edges from `node` where `Edge.node1` is same as `node` and the other node is in `Edge.node2` 
      */
-    edges_from(node: number): Edge[] {
+    edges_from(node: Node): Edge[] {
         // This is a complete graph so all nodes except `node`
         const out: Edge[] = [];
         for (let other_node = 0; other_node < this.size(); other_node++) {
@@ -148,7 +166,7 @@ export class CompleteGraph<T> {
      * @param predicate {function} Predicate deciding if the 
      * node is to be put in the subgraph
      */
-    subgraph(predicate: (node: number) => boolean): CompleteGraph<T> {
+    subgraph(predicate: (node: Node) => boolean): CompleteGraph<T> {
         // this can mabye be done 
         // smarter by directly picking stuff from the matrix
         const kept = this.all_nodes().filter(predicate);
