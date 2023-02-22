@@ -145,7 +145,6 @@ export class CompleteGraph<T> {
      * @returns {Edge[]} Edges from `node` where `Edge.node1` is same as `node` and the other node is in `Edge.node2` 
      */
     edges_from(node: Node): Edge[] {
-        // This is a complete graph so all nodes except `node`
         const out: Edge[] = [];
         for (let other_node = 0; other_node < this.size(); other_node++) {
             if (other_node !== node) {
@@ -160,6 +159,25 @@ export class CompleteGraph<T> {
         }
 
         return out;
+    }
+
+    /**
+     * Gets all nodes connected via an edge to `node` 
+     * @param node {Node} the node in question
+     * @returns 
+     */
+    nodes_connected_to(node: Node): Node[] {
+        // This is a complete graph so all nodes except `node`
+        return this.all_nodes().filter(graph_node => graph_node !== node);
+    }
+
+    /**
+     * Finds the index of first item matching the `predicate`
+     * @param predicate {function} a function that decides if the item is found
+     */
+    find_index(predicate: (item: T) => boolean): number | undefined {
+        const index = this.items.findIndex(predicate);
+        return index !== -1 ? index : undefined;
     }
 
     /**
