@@ -1,21 +1,8 @@
 import yargs from "yargs/yargs"
 import { hideBin } from "yargs/helpers"
 import { group } from "yargs";
-enum NationName {
-    Gotlands = "Gotlands",
-    Gästrike_Hälsing = "Gästrike-Hälsing",
-    Göteborgs = "Göteborgs",
-    Kalmar = "Kalmar",
-    Norrlands = "Norrlands",
-    Smålands = "Smålands",
-    Stockholms = "Stockholms",
-    Södermanlands_Nerikes = "Södermanlands-Nerikes",
-    Uplands = "Uplands",
-    Värmlands = "Värmlands",
-    Västgöta = "Västgöta",
-    Västmanlands_Dala = "Västmanlands-Dala",
-    Östgöta = "Östgöta",
-}
+import { NationName } from "./nation";
+
 
 type CLIArguments = {
     nations: NationName[],
@@ -76,22 +63,7 @@ function get_nation_name(name: string): NationName | undefined {
     }
 }
 
-//TODO Move this to some better place
-const all_nation_names = [
-    NationName.Gotlands,
-    NationName.Gästrike_Hälsing,
-    NationName.Göteborgs,
-    NationName.Kalmar,
-    NationName.Norrlands,
-    NationName.Smålands,
-    NationName.Stockholms,
-    NationName.Södermanlands_Nerikes,
-    NationName.Uplands,
-    NationName.Värmlands,
-    NationName.Västgöta,
-    NationName.Västmanlands_Dala,
-    NationName.Östgöta,
-];
+
 
 function validate_nation_names(nations: string[]): NationName[] {
     //TODO: mabye report all errors
