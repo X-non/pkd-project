@@ -95,12 +95,32 @@ describe.each([
     });
 })
 
-// 1, 2, 3, 4,
-// 1, 2, 3, 4,
-// 1, 2, 3, 4,
-// 1, 2, 3, 4
+test("Can get connected nodes", () => {
+    const items = [0, 1, 2, 3];
+    const matrix = SquareMatrix.from_2d_array([
+        [0, 2, 3, 4],
+        [1, 0, 3, 4],
+        [1, 2, 0, 4],
+        [1, 2, 3, 0],
+    ]);
+    const graph = new CompleteGraph(matrix, items);
+    let neighbours = graph.nodes_connected_to(0);
+    expect(neighbours).toHaveLength(3);
+    expect(neighbours).toContain(1);
+    expect(neighbours).toContain(2);
+    expect(neighbours).toContain(3);
+});
 
-// 1, 1, 1, 1,
-// 2, 2, 2, 2,
-// 3, 3, 3, 3,
-// 4, 4, 4, 4
+test("Can find", () => {
+    const items = ["hei", "woop", "woop", "banana"];
+    const matrix = SquareMatrix.from_2d_array([
+        [0, 2, 3, 4],
+        [1, 0, 3, 4],
+        [1, 2, 0, 4],
+        [1, 2, 3, 0],
+    ]);
+    const graph = new CompleteGraph(matrix, items);
+
+    expect(graph.find_index(item => item === "woop")).toBe(1);
+    expect(graph.find_index(item => false)).toBeUndefined();
+})
