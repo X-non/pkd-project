@@ -4,7 +4,8 @@
         "target": "ES6",
         "strict": true,
         "noEmitOnError": true,
-        "outDir": "build"
+        "outDir": "build",
+        "esModuleInterop": true,
     },
     "include": [
         "src/**/*",
