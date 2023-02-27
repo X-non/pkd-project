@@ -56,20 +56,71 @@ describe("Throws when the graph is invalid", () => {
     })
 })
 
-describe("Subgraph creation", () => {
+describe.each([
+    {
+        items: [0, 1, 2, 3],
+        matrix: SquareMatrix.from_2d_array([
+            [1, 2, 3, 4],
+            [1, 2, 3, 4],
+            [1, 2, 3, 4],
+            [1, 2, 3, 4],
+        ])
+    },
+    {
+        items: [0],
+        matrix: SquareMatrix.from_2d_array([[0]])
+    }
+
+])("Subgraph creation", ({ items, matrix }) => {
+    const graph = new CompleteGraph(matrix, items);
+
     test("Can get empty subgraphs", () => {
-        const items = [0, 1, 2, 3];
-
-        const matrix = SquareMatrix.from_2d_array([
-            [1, 2, 3, 4],
-            [1, 2, 3, 4],
-            [1, 2, 3, 4],
-            [1, 2, 3, 4],
-        ]);
-
-        const graph = new CompleteGraph(matrix, items);
         const empty_subgraph = graph.subgraph((_) => false);
         expect(empty_subgraph.size()).toBe(0);
         expect(empty_subgraph.weight_matrix).toEqual(SquareMatrix.empty());
     });
+
+    test("Can get some subgraphs", () => {
+
+        const subgraph = graph.subgraph(node => node === 0);
+        expect(subgraph.size()).toBe(1);
+    });
+
+    test("subgraph equals graph", () => {
+        const subgraph = graph.subgraph((_) => true);
+        console.log("graph:", graph);
+        console.log("subgraph:", subgraph);
+        expect(subgraph).toEqual(graph);
+        expect(subgraph).not.toBe(graph);
+    });
+})
+
+test("Can get connected nodes", () => {
+    const items = [0, 1, 2, 3];
+    const matrix = SquareMatrix.from_2d_array([
+        [0, 2, 3, 4],
+        [1, 0, 3, 4],
+        [1, 2, 0, 4],
+        [1, 2, 3, 0],
+    ]);
+    const graph = new CompleteGraph(matrix, items);
+    let neighbours = graph.nodes_connected_to(0);
+    expect(neighbours).toHaveLength(3);
+    expect(neighbours).toContain(1);
+    expect(neighbours).toContain(2);
+    expect(neighbours).toContain(3);
+});
+
+test("Can find", () => {
+    const items = ["hei", "woop", "woop", "banana"];
+    const matrix = SquareMatrix.from_2d_array([
+        [0, 2, 3, 4],
+        [1, 0, 3, 4],
+        [1, 2, 0, 4],
+        [1, 2, 3, 0],
+    ]);
+    const graph = new CompleteGraph(matrix, items);
+
+    expect(graph.find_index(item => item === "woop")).toBe(1);
+    expect(graph.find_index(item => false)).toBeUndefined();
 })

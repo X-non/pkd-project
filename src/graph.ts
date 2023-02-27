@@ -14,21 +14,27 @@ export class SquareMatrix<T> {
      * @returns 
      */
     static from_2d_array<T>(array: T[][]): SquareMatrix<T> {
-        const size_length = array.length;
+        const side_length = array.length;
         const data: T[] = [];
 
-        if (size_length === 0) {
+        if (side_length === 0) {
             return SquareMatrix.empty();
         }
 
         for (const row of array) {
-            if (row.length !== size_length) {
+            if (row.length !== side_length) {
                 throw new Error("The rows of the array must be the same length as each other and amount of rows");
             }
-
-            data.push(...row);
         }
-        return new SquareMatrix(data, size_length)
+
+
+        for (let row_i = 0; row_i < side_length; row_i++) {
+            for (let col_i = 0; col_i < side_length; col_i++) {
+                data[SquareMatrix.data_index(side_length, row_i, col_i)] = array[row_i][col_i];
+            }
+        }
+
+        return new SquareMatrix(data, side_length)
     }
     /**
      * Raw initalisation of the baking buffer and side_length.
@@ -46,16 +52,16 @@ export class SquareMatrix<T> {
         this.side_length = side_length;
     }
 
-    private data_index(row: number, column: number): number {
-        return row + column * this.side_length
+    private static data_index(side_length: number, row: number, column: number): number {
+        return row + column * side_length
     }
 
     set(row: number, column: number, value: T) {
-        this.data[this.data_index(row, column)] = value;
+        this.data[SquareMatrix.data_index(this.side_length, row, column)] = value;
     }
 
     get(row: number, column: number): T {
-        return this.data[this.data_index(row, column)];
+        return this.data[SquareMatrix.data_index(this.side_length, row, column)];
     }
 
 }
@@ -139,7 +145,6 @@ export class CompleteGraph<T> {
      * @returns {Edge[]} Edges from `node` where `Edge.node1` is same as `node` and the other node is in `Edge.node2` 
      */
     edges_from(node: Node): Edge[] {
-        // This is a complete graph so all nodes except `node`
         const out: Edge[] = [];
         for (let other_node = 0; other_node < this.size(); other_node++) {
             if (other_node !== node) {
@@ -157,6 +162,25 @@ export class CompleteGraph<T> {
     }
 
     /**
+     * Gets all nodes connected via an edge to `node` 
+     * @param node {Node} the node in question
+     * @returns 
+     */
+    nodes_connected_to(node: Node): Node[] {
+        // This is a complete graph so all nodes except `node`
+        return this.all_nodes().filter(graph_node => graph_node !== node);
+    }
+
+    /**
+     * Finds the index of first item matching the `predicate`
+     * @param predicate {function} a function that decides if the item is found
+     */
+    find_index(predicate: (item: T) => boolean): number | undefined {
+        const index = this.items.findIndex(predicate);
+        return index !== -1 ? index : undefined;
+    }
+
+    /**
      * Makes a new subgraph containing 
      * all the nodes matching `predicate`
      * 
@@ -167,13 +191,18 @@ export class CompleteGraph<T> {
      * node is to be put in the subgraph
      */
     subgraph(predicate: (node: Node) => boolean): CompleteGraph<T> {
-        // this can mabye be done 
-        // smarter by directly picking stuff from the matrix
-        const kept = this.all_nodes().filter(predicate);
-        const kept_items = kept.map(node => this.items[node]);
-        // this probobly needs to be 
-        // reworked if we add directed graphs.
-        const kept_edges = kept.flatMap(node => this.edges_from(node))
-        return CompleteGraph.from_edges(kept_edges, kept_items)
+        const kept_nodes = this.all_nodes().filter(predicate);
+        const out: Node[][] = [];
+        for (let out_row = 0; out_row < kept_nodes.length; out_row++) {
+            out[out_row] = [];
+            for (let out_col = 0; out_col < kept_nodes.length; out_col++) {
+                const prev_row = kept_nodes[out_row];
+                const prev_col = kept_nodes[out_col];
+                out[out_row][out_col] = this.weight_matrix.get(prev_row, prev_col);
+            }
+        }
+
+        const kept_items = kept_nodes.map(node => this.items[node]);
+        return new CompleteGraph(SquareMatrix.from_2d_array(out), kept_items)
     }
 }
