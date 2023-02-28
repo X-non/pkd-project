@@ -7,7 +7,7 @@ import { cyclic_path_length } from "./utils";
 dynamic exact solution
 
 */
-function Held_Karp<T>(graph: CompleteGraph<T>, cyclic: boolean): Array<number> {
+export function tsp_held_karp<T>(graph: CompleteGraph<T>): Array<number> {
     let last_set: Array<number> = [];
     let last_node: number = 0;
     const start: number = 0;
