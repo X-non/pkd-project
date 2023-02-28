@@ -1,4 +1,19 @@
 import { CompleteGraph } from "../graph";
+import { tsp_naive } from "./bruteforce";
+import { tsp_held_karp } from "./held_karp";
+
+export enum Algoritm {
+    Naive = "naive",
+    HeldKarp = "naive-memo",
+}
+
+export function find_short_path<T>(graph: CompleteGraph<T>, algoritm: Algoritm): Array<number> {
+    switch (algoritm) {
+        case Algoritm.Naive: return tsp_naive(graph);
+        case Algoritm.HeldKarp: return tsp_held_karp(graph);
+        default: throw new Error(`All cases of Algorithm should be handled fount '${algoritm}'`);
+    }
+}
 
 export function* all_permutations_lazy<T>(permutation: T[]): Generator<T[]> {
     var length = permutation.length,
