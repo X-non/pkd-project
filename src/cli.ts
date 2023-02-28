@@ -1,12 +1,13 @@
 import yargs from "yargs/yargs"
 import { hideBin } from "yargs/helpers"
-import { group } from "yargs";
-import { NationName } from "./nation";
+import { coerce, group } from "yargs";
+import { NationGraph, NationName } from "./nation";
+import { Algoritm } from "./tsp/utils";
 
 
 type CLIArguments = {
     nations: NationName[],
-    algoritm: string,
+    algoritm: Algoritm,
     groups: number,
 }
 
@@ -63,8 +64,6 @@ function get_nation_name(name: string): NationName | undefined {
     }
 }
 
-
-
 function validate_nation_names(nations: string[]): NationName[] {
     //TODO: mabye report all errors
     const out: NationName[] = [];
@@ -85,8 +84,15 @@ export function get_arguments(): CLIArguments {
         .scriptName("boring-name")
         .option("algoritm", {
             alias: ["a"],
-            choices: ["naive"],
-            default: "naive" //TODO: Choose the "best" by default
+            choices: ["naive", "naive-memo"],
+            default: "naive", //TODO: Choose the "best" by default
+            coerce: (algoritm) => {
+                switch (algoritm) {
+                    case "naive": return Algoritm.Naive;
+                    case "naive-memo": return Algoritm.NaiveMemo;
+                    default: throw new Error(`${algoritm} is not an algorithm`);
+                }
+            }
         })
         .option("groups", {
             alias: "g",
@@ -113,3 +119,36 @@ export function get_arguments(): CLIArguments {
     }
 }
 
+function length_of_longest_name(graph: NationGraph): number {
+    let longest = -Infinity;
+
+    for (const nation of graph.items) {
+        longest = Math.max(longest, nation.name.length);
+    }
+
+    return longest;
+}
+
+export function print_paths(graph: NationGraph, group_paths: number[][]) {
+
+    const header = [...Array(group_paths.length).keys()].map(n => `Group ${n + 1}`);
+    const padding_length = length_of_longest_name(graph);
+    const pad_to_right_length = (text: string) => text.padEnd(padding_length);
+
+    const rows: string[][] = [];
+    for (const group_path of group_paths) {
+        const names = group_path.map(j => graph.items[j].name);
+        for (let i = 0; i < graph.size(); i++) {
+            if (rows[i] === undefined) {
+                rows[i] = [];
+            }
+
+            rows[i].push(pad_to_right_length(names[i]));
+        }
+    }
+
+    console.log(header.map(pad_to_right_length).join(" "))
+    for (const row of rows) {
+        console.log(row.join(" "))
+    }
+}

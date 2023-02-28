@@ -1,8 +1,6 @@
 import { CompleteGraph } from "../graph";
 import { all_permutations_lazy, cyclic_path_length } from "./utils";
 
-
-
 /**
  * Finds the shortest hamiltionian path through all nodes in
  * the provided graph
