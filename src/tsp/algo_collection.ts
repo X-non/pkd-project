@@ -1,4 +1,5 @@
-import { SquareMatrix, CompleteGraph, type Edge } from "./graph";
+import { SquareMatrix, CompleteGraph, type Edge } from "../graph";
+import { cyclic_path_length } from "./utils";
 
 
 
@@ -60,8 +61,9 @@ function Held_Karp<T>(graph: CompleteGraph<T>, cyclic: boolean): Array<number> {
             return record[recordID];
         }
     }
+
     function construct_path(set: Array<number>, end: number): Array<number> {
-        function reverse(set: Array<number>, end: number): Array<number>{
+        function reverse(set: Array<number>, end: number): Array<number> {
             let path: Array<number> = [];
             const node: number = get_value(set, end)[1];
             path.push(node);
@@ -79,30 +81,3 @@ function Held_Karp<T>(graph: CompleteGraph<T>, cyclic: boolean): Array<number> {
     return construct_path(last_set, last_node);
 
 }
-
-function path_length<T>(graph: CompleteGraph<T>, path: Array<number>): number {
-    let sum: number = 0;
-    for(let i = 0; i < graph.size(); i++){
-        if(i < path.length-1){
-            sum = sum+graph.weight_between(path[i],path[i+1]);
-        }
-        else{
-            sum = sum+graph.weight_between(path[i],path[0]);
-        }
-    }
-    return sum;
-}
-
-const items = ["hei", "woop", "woop", "banana"];
-const matrix = SquareMatrix.from_2d_array([
-    [0, 2, 3, 4],
-    [2, 0, 3, 4],
-    [1, 3, 0, 4],
-    [4, 4, 4, 0],
-]);
-const graph = new CompleteGraph(matrix, items);
-
-const the_path = Held_Karp(graph, false);
-console.log(the_path);
-
-console.log(path_length(graph, the_path));
