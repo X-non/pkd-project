@@ -131,7 +131,8 @@ function length_of_longest_name(graph: NationGraph): number {
 
 export function print_paths(graph: NationGraph, group_paths: number[][]) {
 
-    const header = [...Array(group_paths.length).keys()].map(n => `Group ${n + 1}`);
+    const num_groups = group_paths.length;
+    const header = [...Array(num_groups).keys()].map(n => `Group ${n + 1}`);
     const padding_length = length_of_longest_name(graph);
     const pad_to_right_length = (text: string) => text.padEnd(padding_length);
 
@@ -147,8 +148,12 @@ export function print_paths(graph: NationGraph, group_paths: number[][]) {
         }
     }
 
-    console.log(header.map(pad_to_right_length).join(" "))
+    const separator = " │ ";
+    console.log(header.map(pad_to_right_length).join(separator))
+
+    console.log(Array(num_groups).fill("─".repeat(padding_length)).join("─┼─"));
+
     for (const row of rows) {
-        console.log(row.join(" "))
+        console.log(row.join(separator))
     }
 }
