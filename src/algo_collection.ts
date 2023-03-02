@@ -35,7 +35,7 @@ function add_dummy<T>(graph: CompleteGraph<T>): CompleteGraph<T>{
  * @param y : span of y-coordiantes nodes can land in
  * @returns SquareMatrix
  */
-function random_coords<T>(side_length: number, x: number, y: number): CompleteGraph<number>{
+export function random_coords<T>(side_length: number, x: number, y: number): CompleteGraph<number>{
     const coords: Array<Array<number>> = [];
     const matrix: Array<Array<number>> = [];
     for(let i = 0; i < side_length; i++){
@@ -61,10 +61,10 @@ function random_coords<T>(side_length: number, x: number, y: number): CompleteGr
 /**
 * Using memoization for exponential time complexity
 * note: dummy should be false when finish is set
-* @param graph CompleteGraph<T>, graph to be TSP analyzed
-* @param dummy boolean, whether the path should return to origin or not, dummy node must be listed as last node
-* @param finish option to lock the last node, will return acyclical traversal when called with
-* @returns path
+* @param graph {CompleteGraph<T>} graph to be TSP analyzed
+* @param dummy {boolean}  whether the path should return to origin or not, dummy node must be listed as last node
+* @param finish {number} option to lock the last node, will return acyclical traversal when included in call
+* @returns {Array<number>} shortest path according to specification
 */
 export function Held_Karp<T>(graph: CompleteGraph<T>, dummy: boolean, finish?: number): Array<number> {
     let origin: number;
@@ -165,10 +165,10 @@ export function Held_Karp<T>(graph: CompleteGraph<T>, dummy: boolean, finish?: n
 }
 
 /**
- * 
- * @param graph graph the path is placed in
- * @param path path to be measured
- * @returns length of path
+ * Used to compute length of a given path in given graph
+ * @param graph {CompleteGraph<T>} graph the path is placed in
+ * @param path {Array<number>} path to be measured
+ * @returns {number} length of path
  */
 export function path_length<T>(graph: CompleteGraph<T>, path: Array<number>): number {
     let sum: number = 0;
@@ -213,20 +213,11 @@ const graph = new CompleteGraph(matrix, items);
 
 /**
  * special case of Held_Karp adapted for CompleteGraph containing Nations
- * @param graph 
- * @param dummy 
- * @param finish 
- * @returns 
+ * @param graph {CompleteGraph<Nation>} graph to be traversed
+ * @param finish {number} index of Nation in graph.item to end at
+ * @returns {Array<number>} shortest path as an array of indices of the nations in graph.items 
  */
-export function Nation_Held_Karp(graph: CompleteGraph<Nation>, finish?: number): Array<number> {
-    let origin: number;
-    if (finish == undefined) {
-        origin = 0
-    }
-    else {
-        origin = finish;
-    }
-
+export function Nation_Held_Karp(graph: CompleteGraph<Nation>, finish: number): Array<number> {
     let last_set: Array<number> = [];
     let last_node: number = 0;
     const record: Array<Array<number>> = [];
@@ -236,13 +227,13 @@ export function Nation_Held_Karp(graph: CompleteGraph<Nation>, finish?: number):
     //used to calculate new values
     function get_length(set: Array<number>, end: number): Array<number> {
         if (graph.items[end].slots[set.length]) {
-            return [Infinity, 0];
+            return [Infinity, set[0]];
         }
 
         let shortest: number = Infinity;
-        let second_to_last: number = 0;
+        let second_to_last: number = set[0];
         if (set.length === 0) {
-            shortest = graph.edges_from(origin)[end - 1].weight;
+            shortest = graph.edges_from(finish)[end - 1].weight;
             second_to_last = 0;
         }
         if (finish !== undefined && set.length === 1) {
@@ -268,9 +259,11 @@ export function Nation_Held_Karp(graph: CompleteGraph<Nation>, finish?: number):
     // used to look up stored values
     function get_value(set: Array<number>, end: number): Array<number> {
         let recordID = 0;
+        // bitmask of set
         for (const x of set) {
             recordID = recordID + Math.pow(2, x);
         }
+        // bitmask + endpoint for memory adress
         recordID = recordID + record_slice * end;
         if (record[recordID] === undefined) {
             record[recordID] = get_length(set, end);
@@ -294,10 +287,10 @@ export function Nation_Held_Karp(graph: CompleteGraph<Nation>, finish?: number):
                 return path;
             }
         }
-        return reverse(set, end).reverse().concat(origin);
+        return reverse(set, end).reverse().concat(finish);
     }
 
-    get_length(full_set.filter(a => a !== origin), origin);
+    get_length(full_set.filter(a => a !== finish), finish);
     const path = construct_path(last_set, last_node);
 
     return path;
