@@ -2,6 +2,7 @@ import { CompleteGraph, Edge } from "./graph"
 
 export type Nation = {
     name: NationName,
+    slots: Array<boolean>
 }
 export type NationGraph = CompleteGraph<Nation>;
 export enum NationName {
@@ -36,7 +37,7 @@ const all_nation_names = [
 ];
 export function all_nations(): NationGraph {
     //TODO actually implemnet the correct thingy
-    const nations: Nation[] = all_nation_names.map(name => { return { name } });
+    const nations: Nation[] = all_nation_names.map(name => { return { name, slots: [true] } });
 
     let random_edges: Edge[] = [];
     for (let node1 = 0; node1 < nations.length; node1++) {

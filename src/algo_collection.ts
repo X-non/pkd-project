@@ -1,5 +1,6 @@
 import { boolean } from "yargs";
 import { SquareMatrix, CompleteGraph, type Edge } from "./graph";
+import { Nation } from "./nation";
 
 
 /**
@@ -67,7 +68,7 @@ function random_coords<T>(side_length: number, x: number, y: number): CompleteGr
 */
 export function Held_Karp<T>(graph: CompleteGraph<T>, dummy: boolean, finish?: number): Array<number> {
     let origin: number;
-    if(finish == undefined){
+    if(finish === undefined){
         origin = 0
     }
     else{
@@ -169,10 +170,9 @@ export function Held_Karp<T>(graph: CompleteGraph<T>, dummy: boolean, finish?: n
  * @param path path to be measured
  * @returns length of path
  */
-function path_length<T>(graph: CompleteGraph<T>, path: Array<number>): number {
+export function path_length<T>(graph: CompleteGraph<T>, path: Array<number>): number {
     let sum: number = 0;
     for(let i = 0; i < path.length-1; i++){
-        console.log(sum);
         sum = sum+graph.weight_between(path[i],path[i+1]);
     }
     return sum;
@@ -211,13 +211,97 @@ const matrix = SquareMatrix.from_2d_array([
 ]);
 const graph = new CompleteGraph(matrix, items);
 
-const path_nearest = nearest_neighbor(graph,3);
-console.log(path_nearest);
-console.log(path_length(graph, path_nearest));
+/**
+ * special case of Held_Karp adapted for CompleteGraph containing Nations
+ * @param graph 
+ * @param dummy 
+ * @param finish 
+ * @returns 
+ */
+export function Nation_Held_Karp(graph: CompleteGraph<Nation>, finish?: number): Array<number> {
+    let origin: number;
+    if (finish == undefined) {
+        origin = 0
+    }
+    else {
+        origin = finish;
+    }
 
+    let last_set: Array<number> = [];
+    let last_node: number = 0;
+    const record: Array<Array<number>> = [];
+    const record_slice: number = Math.pow(2, graph.size());
+    const full_set: Array<number> = graph.all_nodes();
 
-const path_exact = Held_Karp(add_dummy(graph), true);
-console.log(path_exact);
-console.log(path_length(graph, path_exact));
+    //used to calculate new values
+    function get_length(set: Array<number>, end: number): Array<number> {
+        if (graph.items[end].slots[set.length]) {
+            return [Infinity, 0];
+        }
+
+        let shortest: number = Infinity;
+        let second_to_last: number = 0;
+        if (set.length === 0) {
+            shortest = graph.edges_from(origin)[end - 1].weight;
+            second_to_last = 0;
+        }
+        if (finish !== undefined && set.length === 1) {
+            shortest = graph.weight_between(set[0], end);
+            second_to_last = set[0];
+        }
+        else {
+            for (const node of set) {
+                const length = graph.weight_between(node, end) + get_value(set.filter(a => a !== node), node)[0];
+                if (length < shortest) {
+                    shortest = length;
+                    second_to_last = node;
+                }
+            }
+        }
+        if (set.length + 1 === full_set.length) {
+            last_set = set;
+            last_node = end;
+        }
+        return [shortest, second_to_last];
+    }
+
+    // used to look up stored values
+    function get_value(set: Array<number>, end: number): Array<number> {
+        let recordID = 0;
+        for (const x of set) {
+            recordID = recordID + Math.pow(2, x);
+        }
+        recordID = recordID + record_slice * end;
+        if (record[recordID] === undefined) {
+            record[recordID] = get_length(set, end);
+            return record[recordID];
+        }
+        else {
+            return record[recordID];
+        }
+    }
+    // uses stored values to take the path backwards
+    function construct_path(set: Array<number>, end: number): Array<number> {
+        // returns reverse order tour
+        function reverse(set: Array<number>, end: number): Array<number> {
+            let path: Array<number> = [];
+            const node: number = get_value(set, end)[1];
+            path.push(node);
+            if (set.length > 1) {
+                return path.concat(reverse(set.filter(a => a !== node), node));
+            }
+            else {
+                return path;
+            }
+        }
+        return reverse(set, end).reverse().concat(origin);
+    }
+
+    get_length(full_set.filter(a => a !== origin), origin);
+    const path = construct_path(last_set, last_node);
+
+    return path;
+
+}
 
 
