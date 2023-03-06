@@ -107,7 +107,7 @@ export function get_cache(): SerializedGraph {
 
 export function all_nations(): NationGraph {
     const serialized_graph = get_cache();
-    const nations: Nation[] = serialized_graph.items.map(name => { return { name, slots: [] } });
+    const nations: Nation[] = serialized_graph.items.map(name => { return { name, slots: [] }});
 
     const matrix = SquareMatrix.from_2d_array(serialized_graph.matrix);
     return new CompleteGraph(matrix, nations);

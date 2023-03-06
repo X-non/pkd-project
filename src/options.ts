@@ -16,6 +16,7 @@ import { group } from "yargs";
  * @returns {Array<Array<number>>} Returns one path for each group
  */
 export function selfish_selection(graph: CompleteGraph<Nation>, slots: number, groups: number, end: number, include: Array<number>): Array<Array<number>> {
+    graph.items.forEach(a => a.slots = Array(slots).fill(false));
     const group_routes: Array<Array<number>> = [];
     const permutations: Array<number> = [];
     const available: Array<number> = graph.all_nodes().filter(a => !include.concat(end).includes(a));
