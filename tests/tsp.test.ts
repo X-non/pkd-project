@@ -4,7 +4,7 @@ import { CompleteGraph, SquareMatrix } from "../src/graph";
 
 describe.each([
     tsp_naive,
-    tsp_held_karp,
+    (graph) => tsp_held_karp(graph, false),
 ])("All tsp solvers", (tsp_function) => {
     test.each([
         {

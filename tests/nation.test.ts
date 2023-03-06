@@ -10,6 +10,6 @@ beforeAll(() => set_cache(
 test("Can only select some graphs", () => {
 
     const selected = select_nations(all_nations(), [NationName.Stockholms, NationName.Västmanlands_Dala]);
-    expect(selected.items).toContainEqual({ name: NationName.Stockholms })
-    expect(selected.items).toContainEqual({ name: NationName.Västmanlands_Dala })
+    expect(selected.items).toContainEqual({ slots: [], name: NationName.Stockholms })
+    expect(selected.items).toContainEqual({ slots: [], name: NationName.Västmanlands_Dala })
 }) 

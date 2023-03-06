@@ -10,7 +10,7 @@ export enum Algoritm {
 export function find_short_path<T>(graph: CompleteGraph<T>, algoritm: Algoritm): Array<number> {
     switch (algoritm) {
         case Algoritm.Naive: return tsp_naive(graph);
-        case Algoritm.NaiveMemo: return tsp_held_karp(graph);
+        case Algoritm.NaiveMemo: return tsp_held_karp(graph, false);
         default: throw new Error(`All cases of Algorithm should be handled fount '${algoritm}'`);
     }
 }
