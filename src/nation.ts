@@ -138,6 +138,11 @@ const nation_street_address = {
     [NationName.Östgöta]: "Trädgårdsgatan 15",
 };
 
+/**
+* Takes the API key from the stored file dotenv and returns it
+* @throws if API key does not exist
+* @returns API key
+*/
 function get_api_key(): string {
     const api_key = process.env.OPEN_ROUTES_SERVICE;
     if (api_key === undefined) {
@@ -151,6 +156,13 @@ export enum WalkMetric {
     Distance,
     Time,
 }
+
+/**
+* Gets the location of a nation
+* @param {NationName} nation_name name of the nation to get location of
+* @precondition that there is a api_key file or that API key is saved
+* @returns coordinates for nation
+*/
 export async function get_location(nation_name: NationName): Promise<Coordinate> {
     const search_text = `${nation_street_address[nation_name]}, Uppsala`;
 
@@ -172,6 +184,11 @@ export async function get_location(nation_name: NationName): Promise<Coordinate>
 
 export type SerializedGraph = { matrix: number[][], items: NationName[] };
 
+/**
+* Gets graph of nations from disk
+* @param {string} path - path to to graph
+* @returns graph of nations
+*/
 async function get_matrix_from_disk(path: string): Promise<SerializedGraph | undefined> {
     let file: fs.FileHandle;
     try {
@@ -201,7 +218,11 @@ async function get_matrix_from_disk(path: string): Promise<SerializedGraph | und
 
     return { matrix, items: nation_names as NationName[] }
 }
-
+/**
+* Checks if param is a string array
+* @param {any} items - param to be checked
+* @returns true or false if param is a string array or not
+*/
 function is_string_array(items: any): items is string[] {
     if (Array.isArray(items)) {
         return items.every(item => typeof item === "string")
@@ -209,6 +230,12 @@ function is_string_array(items: any): items is string[] {
         return false
     }
 }
+
+/**
+* Checks if param is 2d array of numbers
+* @param {any} matrix - matrix to be checked
+* @returns true or false if matrix is a 2d array of numbers or not
+*/
 function is_2d_array_of_number(matrix: any): matrix is number[][] {
     if (!Array.isArray(matrix)) {
         return false;
@@ -228,10 +255,6 @@ function is_2d_array_of_number(matrix: any): matrix is number[][] {
     return true;
 }
 
-/**
- * Tries to get the matrix from disk or get it from the open routes service api
- * @returns The matrix or undefined if it failed
- */
 export async function get_matrix(): Promise<SerializedGraph | undefined> {
     const cache_path = "./nations_matrix.json";
     const disc_matrix = await get_matrix_from_disk(cache_path);
@@ -245,20 +268,13 @@ export async function get_matrix(): Promise<SerializedGraph | undefined> {
         return undefined;
     }
 }
-/**
- * Saves the graph to disk at the specified path
- * @param path the path to save to 
- * @param graph the graph to be saved
- */
+
 async function save_graph(path: string, graph: SerializedGraph) {
     const file = await fs.open(path, "w");
     await file.writeFile(JSON.stringify(graph), { "encoding": "utf8" });
     file.close();
 }
-/**
- * Calls the open routes service api and parses out the graph of the nations contained
- * @returns The parsed graph
- */
+
 async function get_matrix_from_api(): Promise<SerializedGraph> {
     const nations = all_nation_names;
     const nation_coordinates_promices = nations.map(get_location);
@@ -273,12 +289,6 @@ async function get_matrix_from_api(): Promise<SerializedGraph> {
     return { matrix: distances, items: nations };
 }
 
-/**
- * Creates the request and sends it to the api 
- * @param coordinates {Coordinate[]} the coordinates we want the distances between
- * @param metric the way the api should report the distance / time between the coordinates
- * @returns a network responce form the api
- */
 async function call_matrix_api(coordinates: Coordinate[], metric: WalkMetric): Promise<Response> {
     const url = new URL("https://api.openrouteservice.org/v2/matrix/foot-walking")
 
@@ -299,14 +309,7 @@ async function call_matrix_api(coordinates: Coordinate[], metric: WalkMetric): P
         }
     });
 }
-/**
- * Tries to extract the coordinate from the responce
- * @preconditons the json should have the shape of the open routes service responce
- * @throws if preconditons are violated 
- * @param json {any} the json responce 
- * @param street_address 
- * @returns {Coordinate} the coordinate contained in the responce
- */
+
 function extract_pos_from_geocode_responce(json: any, street_address: string): Coordinate {
     const features = json["features"] as any[];
 
