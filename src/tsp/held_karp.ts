@@ -219,7 +219,7 @@ const graph = new CompleteGraph(matrix, items);
  * @precondition triangle inequality must be obeyed
  * @returns {Array<number>} shortest path as an array of indices of the nations in graph.items
  */
-export function Nation_Held_Karp(graph: CompleteGraph<Nation>, finish: number): Array<number> {
+export function nation_held_karp(graph: CompleteGraph<Nation>, finish: number): Array<number> {
     let last_set: Array<number> = [];
     let last_node: number = 0;
     const record: Array<Array<number>> = [];

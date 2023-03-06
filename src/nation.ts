@@ -181,6 +181,7 @@ async function get_matrix_from_disk(path: string): Promise<SerializedGraph | und
     }
 
     const json = JSON.parse(await file.readFile({ encoding: "utf8" }));
+    file.close();
     const matrix = json.matrix;
     const items = json.items;
     if (!is_2d_array_of_number(matrix)) {
@@ -244,6 +245,7 @@ export async function get_matrix(): Promise<SerializedGraph | undefined> {
 async function save_graph(path: string, graph: SerializedGraph) {
     const file = await fs.open(path, "w");
     await file.writeFile(JSON.stringify(graph), { "encoding": "utf8" });
+    file.close();
 }
 
 async function get_matrix_from_api(): Promise<SerializedGraph> {

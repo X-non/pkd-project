@@ -1,5 +1,5 @@
 import { SquareMatrix, CompleteGraph, type Edge } from "./graph";
-import { Nation_Held_Karp, path_length, Held_Karp, random_coords } from "./algo_collection";
+import { nation_held_karp, path_length, tsp_held_karp, random_coords } from "./tsp/held_karp";
 import { all_nations, Nation, NationName } from "./nation";
 import { group } from "yargs";
 
@@ -61,7 +61,7 @@ function selfish_selection(graph: CompleteGraph<Nation>, slots: number, groups: 
                 binary = binary >> 1;
             }
             const sub_graph = graph.subgraph(node => set.includes(node));
-            const new_path = Nation_Held_Karp(sub_graph, sub_graph.items.indexOf(graph.items[end]));
+            const new_path = nation_held_karp(sub_graph, sub_graph.items.indexOf(graph.items[end]));
             let distance = path_length(sub_graph, new_path);
 
             for (let node = 0; node < new_path.length - 1; node++) {
@@ -103,10 +103,10 @@ function cycle_selection(graph: CompleteGraph<Nation>, slots: number, groups: nu
     let current: number = Math.pow(2, choices) - 1;
     const last_bit: number = Math.pow(2, graph.size());
     const done: number = Math.pow(2, available.length) - 1;
-    if(current === 0 || current === Math.pow(2,graph.size()-1)-1){
+    if (current === 0 || current === Math.pow(2, graph.size() - 1) - 1) {
         permutations.push(current);
-    }   
-    while (current < done && current !== 0 ) {
+    }
+    while (current < done && current !== 0) {
         let bit = 2;
         let right = current % 2 === 1;
         let left = false;
@@ -140,33 +140,33 @@ function cycle_selection(graph: CompleteGraph<Nation>, slots: number, groups: nu
             binary = binary >> 1;
         }
         const sub_graph = graph.subgraph(node => set.includes(node));
-        const new_path = Held_Karp(sub_graph, false);
+        const new_path = tsp_held_karp(sub_graph, false);
         const real_path = new_path.map(node => graph.items.indexOf(sub_graph.items[node]));
         let distance = path_length(graph, real_path);
         real_path.pop();
         const end_weights: Array<Array<number>> = [];
         for (const node of real_path) {
-            end_weights.push([graph.weight_between(node, end),node])
+            end_weights.push([graph.weight_between(node, end), node])
         }
 
-        end_weights.sort((a,b) => a[0]-b[0]);
-        for(let weight = 0; weight < groups; weight++){
-            distance += end_weights[weight][0]/groups;
+        end_weights.sort((a, b) => a[0] - b[0]);
+        for (let weight = 0; weight < groups; weight++) {
+            distance += end_weights[weight][0] / groups;
         }
 
         if (distance < shortest) {
             shortest = distance;
             shortest_cycle = real_path;
-            for(let node = 0; node < end_weights.length; node++){
+            for (let node = 0; node < end_weights.length; node++) {
                 end_nodes[node] = end_weights[node][1];
             }
         }
     }
-    for(let path = 0; path < groups; path++){
+    for (let path = 0; path < groups; path++) {
         const new_path: Array<number> = [];
-        const start = (shortest_cycle.indexOf(end_nodes[path])-slots+shortest_cycle.length) % shortest_cycle.length+1;
-        for(let node = 0; node < slots; node++){
-            new_path.push(shortest_cycle[(start+node) % shortest_cycle.length]);
+        const start = (shortest_cycle.indexOf(end_nodes[path]) - slots + shortest_cycle.length) % shortest_cycle.length + 1;
+        for (let node = 0; node < slots; node++) {
+            new_path.push(shortest_cycle[(start + node) % shortest_cycle.length]);
         }
         new_path.push(end);
         group_routes.push(new_path);
@@ -210,7 +210,7 @@ let sum_cycle = 0;
 for (const path of paths) {
     const distance = path_length(graph, path);
     console.log(distance);
-    console.log(graph.weight_between(path[path.length-2], 12), "distance to end");
+    console.log(graph.weight_between(path[path.length - 2], 12), "distance to end");
     sum_cycle += distance;
 }
 console.log(sum_cycle, "total")
