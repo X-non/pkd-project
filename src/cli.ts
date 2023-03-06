@@ -9,6 +9,9 @@ type CLIArguments = {
     nations: NationName[],
     algoritm: Algoritm,
     groups: number,
+    slots: number,
+    include: NationName[] | undefined,
+    end: number,
 }
 
 
@@ -53,8 +56,33 @@ export function get_arguments(): CLIArguments {
                 return result;
             },
         })
+        .option("slots", {
+            alias: "s",
+            default: 1,
+            coerce: (argument) => {
+                const result = parseInt(argument, 10);
+                if (Number.isNaN(result)) {
+                    throw new Error(`Argument can't be parsed as a integer. Argument was '${argument}'`)
+                }
+                return result;
+            },
+        })
+        .option("end", {
+            alias: "e",
+            default: 0,
+            coerce: (argument) => {
+                const result = parseInt(argument, 10);
+                if (Number.isNaN(result)) {
+                    throw new Error(`Argument can't be parsed as a integer. Argument was '${argument}'`)
+                }
+                return result;
+            },
+        })
         .array("nations")
         .coerce("nations", validate_nation_names)
+        .array("include")
+        .coerce("include", validate_nation_names)
+        .alias("i", "include")
         .alias("n", "nations")
         .demandOption("nations");
 
@@ -64,6 +92,9 @@ export function get_arguments(): CLIArguments {
         nations: parsed.nations,
         algoritm: parsed.algoritm,
         groups: parsed.groups,
+        slots: parsed.slots,
+        include: parsed.include,
+        end: parsed.end
     }
 }
 

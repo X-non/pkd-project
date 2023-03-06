@@ -15,7 +15,7 @@ import { group } from "yargs";
  * exceed nations contained in graph.items
  * @returns {Array<Array<number>>} Returns one path for each group
  */
-function selfish_selection(graph: CompleteGraph<Nation>, slots: number, groups: number, end: number, include: Array<number>): Array<Array<number>> {
+export function selfish_selection(graph: CompleteGraph<Nation>, slots: number, groups: number, end: number, include: Array<number>): Array<Array<number>> {
     const group_routes: Array<Array<number>> = [];
     const permutations: Array<number> = [];
     const available: Array<number> = graph.all_nodes().filter(a => !include.concat(end).includes(a));
@@ -93,7 +93,7 @@ function selfish_selection(graph: CompleteGraph<Nation>, slots: number, groups: 
  * exceed nations contained in graph.items
  * @returns {Array<Array<number>>} Returns one path for each group, all on the same cycle
  */
-function cycle_selection(graph: CompleteGraph<Nation>, slots: number, groups: number, end: number, include: Array<number>): Array<Array<number>> {
+export function cycle_selection(graph: CompleteGraph<Nation>, slots: number, groups: number, end: number, include: Array<number>): Array<Array<number>> {
     const group_routes: Array<Array<number>> = [];
     const permutations: Array<number> = [];
     const available: Array<number> = graph.all_nodes().filter(a => !include.concat(end).includes(a));
@@ -176,6 +176,7 @@ function cycle_selection(graph: CompleteGraph<Nation>, slots: number, groups: nu
 
 // Testing
 
+/*
 const names: Array<NationName> = [NationName.Gotlands, NationName.Kalmar, NationName.Smålands, NationName.Västgöta, NationName.Uplands]
 const items: Array<Nation> = [];
 const all_graph = all_nations();
@@ -189,6 +190,7 @@ for (let i = 0; i < 13; i++) {
     }
     all_graph.items[i].slots = nation_slots;
 }
+
 const matrix = SquareMatrix.from_2d_array([
     [0, 2, 3, 1, 5],
     [2, 0, 3, 4, 3],
@@ -224,7 +226,7 @@ for (const path of selfish) {
     sum_selfish += distance;
 }
 console.log(sum_selfish, "total");
-
+*/
 
 
 

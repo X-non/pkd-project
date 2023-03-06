@@ -1,6 +1,7 @@
 import { get_arguments, print_paths } from "./cli"
 import { all_nations, select_nations, get_matrix, set_cache } from "./nation";
 import { find_short_path } from "./tsp/utils";
+import {selfish_selection, cycle_selection} from "./options"
 import * as dotenv from 'dotenv'
 
 
@@ -25,18 +26,28 @@ function main() {
     const passed_arguments = get_arguments();
 
     const selected = select_nations(all_nations(), passed_arguments.nations);
+    let include: Array<number> = [];
 
-    const path = find_short_path(selected, passed_arguments.algoritm);
-
-    const between_group_offset = Math.trunc(passed_arguments.nations.length / passed_arguments.groups);
-
-    const group_paths: number[][] = [];
-    for (let group_n = 0; group_n < passed_arguments.groups; group_n++) {
-        const group_path = rotate(path, between_group_offset * group_n);
-        group_paths.push(group_path);
+    if(passed_arguments.include !== undefined){
+        const include_nations = passed_arguments.include.map(name =>  selected.items.find(nation => nation.name === name))
+        include = include_nations.map( nation =>
+            nation !== undefined
+            ? selected.items.indexOf(nation)
+            : -1
+        );
     }
 
-    print_paths(selected, group_paths);
+    const selfish = selfish_selection(selected, passed_arguments.slots, passed_arguments.groups, passed_arguments.end, include);
+
+    const cyclic = cycle_selection(selected, passed_arguments.slots, passed_arguments.groups, passed_arguments.end, include);
+
+    console.log("selfish");
+    print_paths(selected, selfish);
+
+    console.log("cyclic")
+    print_paths(selected, cyclic);
+
+
 }
 
 get_matrix()
