@@ -32,7 +32,11 @@ export const all_nation_names = [
     NationName.Västmanlands_Dala,
     NationName.Östgöta,
 ];
-
+/**
+ * Tries to parse a NationName from `name´
+ * @param name a nations name or nickname 
+ * @returns parsed NationName or undefined  
+ */
 export function get_nation_name(name: string): NationName | undefined {
     switch (name.toLowerCase()) {
 
