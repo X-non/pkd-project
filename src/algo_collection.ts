@@ -1,4 +1,3 @@
-import { boolean } from "yargs";
 import { SquareMatrix, CompleteGraph, type Edge } from "./graph";
 import { Nation } from "./nation";
 
@@ -61,9 +60,10 @@ export function random_coords<T>(side_length: number, x: number, y: number): Com
 /**
 * Using memoization for exponential time complexity
 * note: dummy should be false when finish is set
-* @param graph {CompleteGraph<T>} graph to be TSP analyzed
-* @param dummy {boolean}  whether the path should return to origin or not, dummy node must be listed as last node
-* @param finish {number} option to lock the last node, will return acyclical traversal when included in call
+* @param {CompleteGraph<T>} graph  graph to be TSP analyzed
+* @param {boolean} dummy whether the path should return to origin or not, dummy node must be listed as last node
+* @param {number} finish option to lock the last node, will return acyclical traversal when included in call
+* @precondition Triangle inequality must be obeyed
 * @returns {Array<number>} shortest path according to specification
 */
 export function Held_Karp<T>(graph: CompleteGraph<T>, dummy: boolean, finish?: number): Array<number> {
@@ -213,8 +213,9 @@ const graph = new CompleteGraph(matrix, items);
 
 /**
  * special case of Held_Karp adapted for CompleteGraph containing Nations
- * @param graph {CompleteGraph<Nation>} graph to be traversed
- * @param finish {number} index of Nation in graph.item to end at
+ * @param {CompleteGraph<Nation>} graph graph to be traversed
+ * @param {number} finish index of Nation in graph.item to end at
+ * @precondition triangle inequality must be obeyed
  * @returns {Array<number>} shortest path as an array of indices of the nations in graph.items 
  */
 export function Nation_Held_Karp(graph: CompleteGraph<Nation>, finish: number): Array<number> {

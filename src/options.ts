@@ -6,11 +6,11 @@ import { group } from "yargs";
 
 /**
  * Creates a path for each group by letting the groups pick the cheapest path in order
- * @param graph {CompleteGraph} graph to be traversed, all nations included in the graph will be considered
- * @param slots {number} number of visits per group, excluding finish
- * @param groups {number} number of groups participating
- * @param end {number} index of the end point nation in graph.items
- * @param include {Array<number>} containing the indices of nations that must be included, excluding the end point
+ * @param {CompleteGraph} graph graph to be traversed, all nations included in the graph will be considered
+ * @param {number} slots number of visits per group, excluding finish
+ * @param {number} groups number of groups participating
+ * @param {number} end  index of the end point nation in graph.items
+ * @param {Array<number>} include containing the indices of nations that must be included, excluding the end point
  * @precondition groups must not exceed slots if include is a non-empty arary, groups may never
  * exceed nations contained in graph.items
  * @returns {Array<Array<number>>} Returns one path for each group
@@ -82,6 +82,17 @@ function selfish_selection(graph: CompleteGraph<Nation>, slots: number, groups: 
     return group_routes;
 }
 
+/**
+ * Creates a path for each group by letting the groups pick the cheapest path in order
+ * @param {CompleteGraph} graph graph to be traversed, all nations included in the graph will be considered
+ * @param {number} slots number of visits per group, excluding finish
+ * @param {number} groups number of groups participating
+ * @param {number} end  index of the end point nation in graph.items
+ * @param {Array<number>} include containing the indices of nations that must be included, excluding the end point
+ * @precondition groups must not exceed slots if include is a non-empty arary, groups may never
+ * exceed nations contained in graph.items
+ * @returns {Array<Array<number>>} Returns one path for each group, all on the same cycle
+ */
 function cycle_selection(graph: CompleteGraph<Nation>, slots: number, groups: number, end: number, include: Array<number>): Array<Array<number>> {
     const group_routes: Array<Array<number>> = [];
     const permutations: Array<number> = [];
