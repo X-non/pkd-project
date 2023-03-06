@@ -5,6 +5,8 @@ import { tsp_held_karp } from "./held_karp";
 export enum Algoritm {
     Naive = "naive",
     NaiveMemo = "naive-memo",
+    Cyclic = "cyclic",
+    Selfish = "selfish",
 }
 
 export function find_short_path<T>(graph: CompleteGraph<T>, algoritm: Algoritm): Array<number> {
