@@ -203,15 +203,6 @@ function nearest_neighbor<T>(graph: CompleteGraph<T>, origin?: number): Array<nu
     return step(graph.all_nodes(), origin);
 }
 
-const items = ["hei", "woop", "woop", "banana"];
-const matrix = SquareMatrix.from_2d_array([
-    [0, 2, 3, 1],
-    [2, 0, 3, 4],
-    [1, 3, 0, 4],
-    [4, 4, 4, 0],
-]);
-const graph = new CompleteGraph(matrix, items);
-
 /**
  * special case of Held_Karp adapted for CompleteGraph containing Nations
  * @param {CompleteGraph<Nation>} graph graph to be traversed
