@@ -10,21 +10,6 @@ import { nation_held_karp, tsp_held_karp } from "./tsp/held_karp";
 //gets things from .env files and puts them in process.env
 dotenv.config()
 
-function rotate(path: number[], n: number): number[] {
-    if (path.length === 0) {
-        return [];
-    }
-
-    let copy = structuredClone(path);
-    for (let i = 0; i < n; i++) {
-        const last = copy.pop() as number;
-        copy.unshift(last);
-    }
-
-    return copy;
-}
-
-
 
 /**
  * Kills the program with error message
