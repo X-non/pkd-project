@@ -4,9 +4,8 @@ import { all_permutations_lazy, cyclic_path_length } from "./utils";
 /**
  * Finds the shortest hamiltionian path through all nodes in
  * the provided graph
- * @param {graph} - the graph we want to find the shortest hamiltionian path
- * @precondition {CompleteGraph} - Triangle inequality must be obeyed
- * @returns {Array<number> - The shortest hamiltonian path
+ * @param graph {CompleteGraph} the graph we want to find the shortest hamiltionian path
+ * @returns {Array<number>} - The shortest hamiltonian path
  */
 export function tsp_naive<T>(graph: CompleteGraph<T>): Array<number> {
     let shortest_path_length = Infinity;

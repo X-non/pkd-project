@@ -228,6 +228,10 @@ function is_2d_array_of_number(matrix: any): matrix is number[][] {
     return true;
 }
 
+/**
+ * Tries to get the matrix from disk or get it from the open routes service api
+ * @returns The matrix or undefined if it failed
+ */
 export async function get_matrix(): Promise<SerializedGraph | undefined> {
     const cache_path = "./nations_matrix.json";
     const disc_matrix = await get_matrix_from_disk(cache_path);
@@ -241,13 +245,20 @@ export async function get_matrix(): Promise<SerializedGraph | undefined> {
         return undefined;
     }
 }
-
+/**
+ * Saves the graph to disk at the specified path
+ * @param path the path to save to 
+ * @param graph the graph to be saved
+ */
 async function save_graph(path: string, graph: SerializedGraph) {
     const file = await fs.open(path, "w");
     await file.writeFile(JSON.stringify(graph), { "encoding": "utf8" });
     file.close();
 }
-
+/**
+ * Calls the open routes service api and parses out the graph of the nations contained
+ * @returns The parsed graph
+ */
 async function get_matrix_from_api(): Promise<SerializedGraph> {
     const nations = all_nation_names;
     const nation_coordinates_promices = nations.map(get_location);
@@ -262,6 +273,12 @@ async function get_matrix_from_api(): Promise<SerializedGraph> {
     return { matrix: distances, items: nations };
 }
 
+/**
+ * Creates the request and sends it to the api 
+ * @param coordinates {Coordinate[]} the coordinates we want the distances between
+ * @param metric the way the api should report the distance / time between the coordinates
+ * @returns a network responce form the api
+ */
 async function call_matrix_api(coordinates: Coordinate[], metric: WalkMetric): Promise<Response> {
     const url = new URL("https://api.openrouteservice.org/v2/matrix/foot-walking")
 
@@ -282,7 +299,14 @@ async function call_matrix_api(coordinates: Coordinate[], metric: WalkMetric): P
         }
     });
 }
-
+/**
+ * Tries to extract the coordinate from the responce
+ * @preconditons the json should have the shape of the open routes service responce
+ * @throws if preconditons are violated 
+ * @param json {any} the json responce 
+ * @param street_address 
+ * @returns {Coordinate} the coordinate contained in the responce
+ */
 function extract_pos_from_geocode_responce(json: any, street_address: string): Coordinate {
     const features = json["features"] as any[];
 

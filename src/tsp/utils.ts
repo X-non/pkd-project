@@ -38,7 +38,13 @@ export function* all_permutations_lazy<T>(permutation: T[]): Generator<T[]> {
         }
     }
 }
-
+/**
+ * Calculates the length of the path, i.e. the sum of weight between 
+ * i to i + 1 plus the weight between the first and lase node in the array
+ * @param graph graph to get weights from
+ * @param path array of indcies into graph 
+ * @returns 
+ */
 export function cyclic_path_length<T>(graph: CompleteGraph<T>, path: Array<number>): number {
     let sum: number = 0;
     for (let i = 0; i < graph.size(); i++) {

@@ -73,7 +73,13 @@ export type Edge = { node1: Node, node2: Node, weight: number };
 export class CompleteGraph<T> {
     weight_matrix: SquareMatrix<Node>;
     items: T[]
-
+    /**
+     * Makes a new CompleteGraph from the matrix and its items  
+     * @precondition the sidelength and length of items must match
+     * @throws if preconditions are violated
+     * @param weight_matrix matrix containing the weights
+     * @param items items of the graph 
+     */
     constructor(weight_matrix: SquareMatrix<Node>, items: T[]) {
 
         if (weight_matrix.side_length !== items.length) {
@@ -85,8 +91,9 @@ export class CompleteGraph<T> {
 
     /**
      * Makes a complete graph form its edges
-     * @throws If the edges between items dont 
-     * form a complete graph between all the items 
+     * @precondtion edges between items mustform a complete 
+     * graph between all the items 
+     * @throws if preconditons are violated 
      * @param edges 
      * @param items 
      */
