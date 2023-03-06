@@ -1,7 +1,7 @@
 import yargs from "yargs/yargs"
 import { hideBin } from "yargs/helpers"
 import { coerce, group } from "yargs";
-import { NationGraph, NationName } from "./nation";
+import { get_nation_name, NationGraph, NationName } from "./nation";
 import { Algoritm } from "./tsp/utils";
 
 
@@ -11,58 +11,6 @@ type CLIArguments = {
     groups: number,
 }
 
-function get_nation_name(name: string): NationName | undefined {
-
-    switch (name.toLowerCase()) {
-
-        case "gotlands":
-            return NationName.Gotlands;
-
-        case "gh":
-        case "gästrike-hälsing":
-            return NationName.Gästrike_Hälsing;
-
-        case "gbg":
-        case "göteborgs":
-            return NationName.Göteborgs;
-
-        case "kalmar":
-            return NationName.Kalmar;
-
-        case "norrlands":
-            return NationName.Norrlands;
-
-        case "smålands":
-            return NationName.Smålands;
-
-        case "stocken":
-        case "stockholms":
-            return NationName.Stockholms;
-
-        case "snerkes":
-        case "södermanlands-nerikes":
-            return NationName.Södermanlands_Nerikes;
-
-        case "uplands":
-            return NationName.Uplands;
-
-        case "värmlands":
-            return NationName.Värmlands;
-
-        case "västgöta":
-            return NationName.Västgöta;
-
-        case "v-dala":
-        case "västmanlands-dala":
-            return NationName.Västmanlands_Dala;
-
-        case "östgöta":
-            return NationName.Östgöta;
-
-        default:
-            return undefined;
-    }
-}
 
 function validate_nation_names(nations: string[]): NationName[] {
     //TODO: mabye report all errors
